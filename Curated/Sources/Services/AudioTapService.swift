@@ -11,11 +11,14 @@ final class AudioTapService: ObservableObject {
     private var pcmBuffer = Data()
     private let bufferDuration: TimeInterval = 5.0 // seconds per Valence call
     private var bufferStartTime: Date?
+    private var capturedSampleRate: Double = 48000
+    private let bufferQueue = DispatchQueue(label: "com.curated.audiotap.buffer")
 
     func startTap() {
         let engine = AVAudioEngine()
         let inputNode = engine.inputNode
         let format = inputNode.outputFormat(forBus: 0)
+        capturedSampleRate = format.sampleRate
 
         inputNode.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
             self?.handleBuffer(buffer)
@@ -25,7 +28,7 @@ final class AudioTapService: ObservableObject {
             try engine.start()
             audioEngine = engine
             isRecording = true
-            bufferStartTime = Date()
+            bufferQueue.sync { bufferStartTime = Date() }
         } catch {
             print("AudioTap start failed: \(error)")
         }
@@ -36,14 +39,16 @@ final class AudioTapService: ObservableObject {
         audioEngine?.stop()
         audioEngine = nil
         isRecording = false
-        pcmBuffer = Data()
+        bufferQueue.sync {
+            pcmBuffer = Data()
+            bufferStartTime = nil
+        }
     }
 
     private func handleBuffer(_ buffer: AVAudioPCMBuffer) {
         guard let channelData = buffer.floatChannelData else { return }
         let frameCount = Int(buffer.frameLength)
 
-        // Convert float32 to int16 PCM
         var int16Data = Data(capacity: frameCount * 2)
         for i in 0..<frameCount {
             let sample = max(-1.0, min(1.0, channelData[0][i]))
@@ -51,22 +56,26 @@ final class AudioTapService: ObservableObject {
             int16Data.append(Data(bytes: &int16Sample, count: 2))
         }
 
-        pcmBuffer.append(int16Data)
+        let sampleRate = capturedSampleRate
 
-        guard let start = bufferStartTime, Date().timeIntervalSince(start) >= bufferDuration else {
-            return
-        }
+        bufferQueue.sync {
+            pcmBuffer.append(int16Data)
 
-        let audioData = pcmBuffer
-        pcmBuffer = Data()
-        bufferStartTime = Date()
+            guard let start = bufferStartTime, Date().timeIntervalSince(start) >= bufferDuration else {
+                return
+            }
 
-        Task {
-            do {
-                let emotion = try await ValenceService.shared.analyzeEmotion(audioData: audioData)
-                await MainActor.run { self.latestEmotion = emotion }
-            } catch {
-                print("Valence analysis failed: \(error)")
+            let audioData = pcmBuffer
+            pcmBuffer = Data()
+            bufferStartTime = Date()
+
+            Task {
+                do {
+                    let emotion = try await ValenceService.shared.analyzeEmotion(audioData: audioData, sampleRate: Int(sampleRate))
+                    await MainActor.run { self.latestEmotion = emotion }
+                } catch {
+                    print("Valence analysis failed: \(error)")
+                }
             }
         }
     }

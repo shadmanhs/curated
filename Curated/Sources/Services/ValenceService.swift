@@ -11,8 +11,8 @@ final class ValenceService {
 
     /// Analyze emotion from a short audio buffer (4-10s of PCM data).
     /// Converts to WAV, sends to Valence DiscreteAPI, returns an EmotionEvent.
-    func analyzeEmotion(audioData: Data) async throws -> EmotionEvent {
-        let wavData = wrapInWAV(pcmData: audioData, sampleRate: 44100, channels: 1, bitsPerSample: 16)
+    func analyzeEmotion(audioData: Data, sampleRate: Int = 48000) async throws -> EmotionEvent {
+        let wavData = wrapInWAV(pcmData: audioData, sampleRate: sampleRate, channels: 1, bitsPerSample: 16)
 
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"

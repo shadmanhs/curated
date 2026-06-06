@@ -53,7 +53,10 @@ final class CameraService: NSObject, ObservableObject {
 
     /// Capture a single frame as JPEG data.
     func captureFrame() async throws -> Data {
-        try await withCheckedThrowingContinuation { continuation in
+        if continuation != nil {
+            throw CameraError.captureBusy
+        }
+        return try await withCheckedThrowingContinuation { continuation in
             self.continuation = continuation
             let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
             output.capturePhoto(with: settings, delegate: self)
@@ -90,11 +93,13 @@ extension CameraService: AVCapturePhotoCaptureDelegate {
 enum CameraError: Error, LocalizedError {
     case noData
     case notAuthorized
+    case captureBusy
 
     var errorDescription: String? {
         switch self {
         case .noData: return "No image data captured"
         case .notAuthorized: return "Camera access not authorized"
+        case .captureBusy: return "A capture is already in progress"
         }
     }
 }
