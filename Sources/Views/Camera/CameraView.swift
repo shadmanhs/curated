@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 
 struct CameraView: View {
@@ -172,3 +173,4 @@ struct FitCheckResultCard: View {
         }
     }
 }
+#endif

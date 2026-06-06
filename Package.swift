@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "Curated",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v17), .macOS(.v14)],
     dependencies: [
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0"),
         .package(url: "https://github.com/elevenlabs/elevenlabs-swift-sdk.git", from: "2.0.0"),

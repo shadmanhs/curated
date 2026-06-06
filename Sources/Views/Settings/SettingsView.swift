@@ -80,7 +80,9 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Your Vibe")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Your Vibe")

@@ -1,3 +1,4 @@
+#if os(iOS)
 import AVFoundation
 import UIKit
 
@@ -103,3 +104,4 @@ enum CameraError: Error, LocalizedError {
         }
     }
 }
+#endif

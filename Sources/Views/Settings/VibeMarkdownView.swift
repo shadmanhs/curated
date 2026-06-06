@@ -48,7 +48,9 @@ struct VibeMarkdownView: View {
         }
         .background(DesignSystem.Colors.canvas)
         .navigationTitle("vibe.md")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 
     private func parseBlocks() -> [MarkdownBlock] {

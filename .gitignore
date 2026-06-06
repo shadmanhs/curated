@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Swift Package Manager
+.build/
+*.xcuserdata
