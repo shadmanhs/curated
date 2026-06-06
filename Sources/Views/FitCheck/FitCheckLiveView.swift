@@ -47,13 +47,17 @@ struct FitCheckLiveView: View {
         }
         .task {
             camera.checkAuthorization()
-            // Wait briefly for authorization callback, then auto-connect
+            // Wait for authorization
             for _ in 0..<10 {
                 try? await Task.sleep(nanoseconds: 200_000_000)
                 if camera.isAuthorized { break }
             }
             if camera.isAuthorized && !gemini.isConnected {
+                // Connect Gemini first (configures audio session), then restart camera
                 await startSession()
+                // Give camera session a moment to recover after audio session config
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                camera.restartSession()
             }
         }
         .onDisappear {
@@ -131,12 +135,25 @@ struct FitCheckLiveView: View {
 
     private var controlBar: some View {
         HStack(spacing: DesignSystem.Spacing.xxl) {
+            // Flip camera button
+            Button {
+                camera.flipCamera()
+            } label: {
+                Image(systemName: "camera.rotate.fill")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Circle())
+            }
+
             Spacer()
 
             // Main connect/disconnect button
             Button {
                 Task {
                     if gemini.isConnected {
+                        camera.stopStreaming()
                         await gemini.disconnect()
                     } else {
                         await startSession()
@@ -191,5 +208,11 @@ struct FitCheckLiveView: View {
 
         // Connect to Gemini Live
         await gemini.connect()
+
+        // Start streaming camera frames to Gemini
+        camera.onFrame = { [weak gemini] jpegData in
+            gemini?.sendVideoFrame(jpegData)
+        }
+        camera.startStreaming()
     }
 }

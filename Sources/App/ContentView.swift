@@ -10,7 +10,7 @@ struct ContentView: View {
                     Label("Talk", systemImage: "waveform")
                 }
 
-            CameraView()
+            FitCheckLiveView()
                 .tabItem {
                     Label("Fit Check", systemImage: "camera")
                 }

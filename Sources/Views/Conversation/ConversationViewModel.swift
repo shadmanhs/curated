@@ -15,6 +15,7 @@ final class ConversationViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let audioTap = AudioTapService()
     private var toolObserverTask: Task<Void, Never>?
+    private var lastSyncedVibeHash: Int = 0
 
     var vibeStore: VibeStore?
 
@@ -34,17 +35,16 @@ final class ConversationViewModel: ObservableObject {
         connectionStatus = "Connecting..."
 
         do {
+            // Update agent system prompt only if vibe context changed
             let vibeMd = vibeStore?.rawMarkdown ?? ""
-            let systemPrompt = vibeMd.isEmpty ? nil : """
-                You are a talking mirror — a calm, direct, tasteful voice that reflects the user's aesthetic back to them.
-                You know their style, interests, and sensibility intimately because their taste profile is below.
-                Speak like a confident, warm friend with excellent taste. Never be sycophantic. Be brief and specific.
+            let vibeHash = vibeMd.hashValue
+            if vibeHash != lastSyncedVibeHash {
+                await updateAgentPrompt(agentId: agentId, vibeContext: vibeMd)
+                lastSyncedVibeHash = vibeHash
+            }
 
-                \(vibeMd)
-                """
             let voiceId = Secrets.elevenLabsVoiceId.isEmpty ? nil : Secrets.elevenLabsVoiceId
             let config = ConversationConfig(
-                agentOverrides: AgentOverrides(prompt: systemPrompt),
                 ttsOverrides: voiceId.map { TTSOverrides(voiceId: $0) },
                 conversationOverrides: ConversationOverrides(textOnly: false)
             )
@@ -130,10 +130,14 @@ final class ConversationViewModel: ObservableObject {
         conversation.$messages
             .receive(on: DispatchQueue.main)
             .sink { [weak self] msgs in
-                self?.messages = msgs.map { msg in
-                    ConversationMessage(
+                self?.messages = msgs.compactMap { msg in
+                    let cleaned = msg.content
+                        .replacingOccurrences(of: "\\[.*?\\]\\s*", with: "", options: .regularExpression)
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !cleaned.isEmpty else { return nil }
+                    return ConversationMessage(
                         role: msg.role == .user ? .user : .agent,
-                        content: msg.content
+                        content: cleaned
                     )
                 }
             }
@@ -170,6 +174,38 @@ final class ConversationViewModel: ObservableObject {
             for: toolCall.toolCallId,
             result: result
         )
+    }
+
+    private func updateAgentPrompt(agentId: String, vibeContext: String) async {
+        let apiKey = Secrets.elevenLabsAPIKey
+        guard !apiKey.isEmpty else { return }
+
+        let prompt = """
+        You are Curated, a personal style advisor and talking mirror. You are a calm, direct, tasteful voice that reflects the user's aesthetic back to them.
+        Speak like a confident, warm friend with excellent taste. Never be sycophantic. Be brief and specific.
+        Do not use stage directions like [Warmly] or [Gently] in your responses.
+        Keep responses conversational — 2-3 sentences max unless asked for more detail.
+        \(vibeContext.isEmpty ? "" : "\nThe user's personal style profile:\n\(vibeContext)")
+        """
+
+        guard let url = URL(string: "https://api.elevenlabs.io/v1/convai/agents/\(agentId)") else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue(apiKey, forHTTPHeaderField: "xi-api-key")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = [
+            "conversation_config": [
+                "agent": [
+                    "prompt": [
+                        "prompt": prompt
+                    ]
+                ]
+            ]
+        ]
+
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        _ = try? await URLSession.shared.data(for: request)
     }
 }
 

@@ -63,20 +63,11 @@ final class GeminiLiveService: NSObject, ObservableObject {
             "setup": [
                 "model": "models/\(modelName)",
                 "generationConfig": [
-                    "responseModalities": ["AUDIO"],
-                    "speechConfig": [
-                        "voiceConfig": [
-                            "prebuiltVoiceConfig": [
-                                "voiceName": "Aoede"
-                            ]
-                        ]
-                    ]
+                    "responseModalities": ["AUDIO"]
                 ],
                 "systemInstruction": [
                     "parts": [["text": systemPrompt]]
-                ],
-                "inputAudioTranscription": [:],
-                "outputAudioTranscription": [:]
+                ]
             ]
         ]
 
@@ -131,20 +122,19 @@ final class GeminiLiveService: NSObject, ObservableObject {
         let base64 = jpegData.base64EncodedString()
         let message: [String: Any] = [
             "realtimeInput": [
-                "mediaChunks": [
-                    [
-                        "data": base64,
-                        "mimeType": "image/jpeg"
-                    ]
+                "video": [
+                    "data": base64,
+                    "mimeType": "image/jpeg"
                 ]
             ]
         ]
 
-        guard let data = try? JSONSerialization.data(withJSONObject: message) else { return }
+        guard let data = try? JSONSerialization.data(withJSONObject: message),
+              let jsonString = String(data: data, encoding: .utf8) else { return }
 
         Task { @MainActor [weak self] in
             guard let self, self.isConnected, let task = self.webSocketTask else { return }
-            task.send(.data(data)) { error in
+            task.send(.string(jsonString)) { error in
                 if let error { print("Send video frame error: \(error)") }
             }
         }
@@ -237,20 +227,19 @@ final class GeminiLiveService: NSObject, ObservableObject {
         let base64 = pcmData.base64EncodedString()
         let message: [String: Any] = [
             "realtimeInput": [
-                "mediaChunks": [
-                    [
-                        "data": base64,
-                        "mimeType": "audio/pcm;rate=16000"
-                    ]
+                "audio": [
+                    "data": base64,
+                    "mimeType": "audio/pcm;rate=16000"
                 ]
             ]
         ]
 
-        guard let data = try? JSONSerialization.data(withJSONObject: message) else { return }
+        guard let data = try? JSONSerialization.data(withJSONObject: message),
+              let jsonString = String(data: data, encoding: .utf8) else { return }
 
         Task { @MainActor [weak self] in
             guard let self, let task = self.webSocketTask else { return }
-            task.send(.data(data)) { error in
+            task.send(.string(jsonString)) { error in
                 if let error { print("Send audio error: \(error)") }
             }
         }
@@ -429,8 +418,9 @@ final class GeminiLiveService: NSObject, ObservableObject {
 
     private func configureAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth])
+        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
         try session.setActive(true)
+        try session.overrideOutputAudioPort(.speaker)
     }
 
     // MARK: - System Prompt

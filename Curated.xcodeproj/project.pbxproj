@@ -16,17 +16,22 @@
 		3A59E0E4F244CFB3EAC6F69F /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 46808E2F4E26DC26254E376D /* Yams */; };
 		3EE9FECEEE77CFDC007E985C /* FitCheckResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC14F842E680E0C8CF5A0 /* FitCheckResult.swift */; };
 		52EF4EE75F3FEE3E66AA2BA8 /* VibeProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB144B0215DF9BC0D37E2A5 /* VibeProfileView.swift */; };
-		87EA4B64A9E644419E423967 /* InstagramLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F083911D2B14063BA7543B9 /* InstagramLoginView.swift */; };
+		5D17804F8F68F2330143987D /* ConversationHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1911668322188FFA522ADF0C /* ConversationHistoryStore.swift */; };
 		69E42205ECACDC9905C05698 /* ValenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F92D7903F8ED709F0304BBC /* ValenceService.swift */; };
 		6D25CF8B281BBA9C9E5B7825 /* VibeMarkdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B75D9CC826B6F5BB3A97AC23 /* VibeMarkdownView.swift */; };
 		6E8C04BB756EFF9BCECD64B4 /* ElevenLabs in Frameworks */ = {isa = PBXBuildFile; productRef = 41B520CBF673DA019B26FEBA /* ElevenLabs */; };
 		6F597CA0819D237543B9D93D /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE89AB430414424AF8DF908 /* ConversationView.swift */; };
+		717E8213AA5DD2B5FB7E2AA9 /* VibeRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA4FF514B3EF668DE1F5AFB6 /* VibeRevealView.swift */; };
+		8D16208C1DFCFC53BB41EEC1 /* FitCheckLiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81ABAE37369A2845EA46ECC4 /* FitCheckLiveView.swift */; };
 		99C875FF9A88EEE91EFCC77C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05C0F1C232265A19366EA4B /* ContentView.swift */; };
 		9A819A01A29B61280C6D355B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44575A9C84E65FC571C98465 /* SettingsView.swift */; };
 		A1922DDD8338CCFE5DDA323D /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D3CE5867D6AEACD42A6092 /* APIService.swift */; };
+		ABA2BCB4885A7804FFCE3C3D /* GeminiVisionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7372AAE8F2B1671821908E51 /* GeminiVisionService.swift */; };
 		B20BCEEA18B36B3674B28C11 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C4C5EDB96634D6740F5314 /* CameraPreviewView.swift */; };
+		C9B1E2AF4189B4DC1EF05AAE /* InstagramLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8D81FA4D762C6034CC8220 /* InstagramLoginView.swift */; };
 		CF6C373A5BA572108B09E349 /* VibeProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91908C88539D30FA0F48343F /* VibeProfile.swift */; };
 		D2A1B4826FD7E3133B5F345B /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A335BDC5E06013DB10C12518 /* DesignSystem.swift */; };
+		DE5FA2E2ABF7060A8005DCDB /* GeminiLiveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E06DAB62A30E0C7089135 /* GeminiLiveService.swift */; };
 		E870BE45D00A655FACA90EDD /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF86236B0D8059B761040AD /* Components.swift */; };
 		EA658405209D5A06527AD5B1 /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C879C9E335625BC2304A62 /* ConversationViewModel.swift */; };
 		FC666D36475E6F8718F60266 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D75876F785426872E28C2C /* CameraView.swift */; };
@@ -34,14 +39,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1911668322188FFA522ADF0C /* ConversationHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationHistoryStore.swift; sourceTree = "<group>"; };
 		1DF86236B0D8059B761040AD /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		1F6CB2CBB1F0E1E75CBA4792 /* RecommendationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsView.swift; sourceTree = "<group>"; };
+		2CF9C5E4FA7C4647F0825BB3 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		37CCABE9B591FC3C9EE0C771 /* EmotionEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionEvent.swift; sourceTree = "<group>"; };
-		3F1F87751016CF2FDB7668BE /* Curated.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Curated.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B8E06DAB62A30E0C7089135 /* GeminiLiveService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiLiveService.swift; sourceTree = "<group>"; };
+		3F1F87751016CF2FDB7668BE /* Curated.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Curated.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		44575A9C84E65FC571C98465 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		7F083911D2B14063BA7543B9 /* InstagramLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramLoginView.swift; sourceTree = "<group>"; };
 		52D754EB4BC4E82D73929148 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
+		7372AAE8F2B1671821908E51 /* GeminiVisionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiVisionService.swift; sourceTree = "<group>"; };
 		7F92D7903F8ED709F0304BBC /* ValenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValenceService.swift; sourceTree = "<group>"; };
+		81ABAE37369A2845EA46ECC4 /* FitCheckLiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitCheckLiveView.swift; sourceTree = "<group>"; };
 		81C4C5EDB96634D6740F5314 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		91908C88539D30FA0F48343F /* VibeProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeProfile.swift; sourceTree = "<group>"; };
 		9661E1F5EBD82F7F56DD50C1 /* CuratedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CuratedApp.swift; sourceTree = "<group>"; };
@@ -50,6 +59,7 @@
 		A335BDC5E06013DB10C12518 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		B75D9CC826B6F5BB3A97AC23 /* VibeMarkdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeMarkdownView.swift; sourceTree = "<group>"; };
 		BEE89AB430414424AF8DF908 /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
+		CA4FF514B3EF668DE1F5AFB6 /* VibeRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeRevealView.swift; sourceTree = "<group>"; };
 		CB69714C7A1BD17F4C9F5047 /* AudioTapService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTapService.swift; sourceTree = "<group>"; };
 		D7C879C9E335625BC2304A62 /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		DDA92000749754CE24A8C41D /* VibeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeStore.swift; sourceTree = "<group>"; };
@@ -57,6 +67,7 @@
 		F0D75876F785426872E28C2C /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		F2AEC14F842E680E0C8CF5A0 /* FitCheckResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitCheckResult.swift; sourceTree = "<group>"; };
 		F6D3CE5867D6AEACD42A6092 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		FE8D81FA4D762C6034CC8220 /* InstagramLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramLoginView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +89,9 @@
 				F6D3CE5867D6AEACD42A6092 /* APIService.swift */,
 				CB69714C7A1BD17F4C9F5047 /* AudioTapService.swift */,
 				DFF4FDB920C6898E3310F5D5 /* CameraService.swift */,
+				1911668322188FFA522ADF0C /* ConversationHistoryStore.swift */,
+				3B8E06DAB62A30E0C7089135 /* GeminiLiveService.swift */,
+				7372AAE8F2B1671821908E51 /* GeminiVisionService.swift */,
 				52D754EB4BC4E82D73929148 /* Secrets.swift */,
 				7F92D7903F8ED709F0304BBC /* ValenceService.swift */,
 				DDA92000749754CE24A8C41D /* VibeStore.swift */,
@@ -88,6 +102,7 @@
 		539A1F90DAB049E8F16527C6 = {
 			isa = PBXGroup;
 			children = (
+				54658D7B65EECD5D01B5F0A7 /* curated */,
 				60673C757334F3DCC75CD2A5 /* Sources */,
 				FDF66B4C156F1A409C7ED063 /* Products */,
 			);
@@ -101,6 +116,15 @@
 				91908C88539D30FA0F48343F /* VibeProfile.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		54658D7B65EECD5D01B5F0A7 /* curated */ = {
+			isa = PBXGroup;
+			children = (
+				2CF9C5E4FA7C4647F0825BB3 /* Secrets.xcconfig */,
+			);
+			name = curated;
+			path = .;
 			sourceTree = "<group>";
 		};
 		58476F1DF69B12B2D14713A9 /* App */ = {
@@ -127,12 +151,21 @@
 		650C191374D3D09DC3267EC5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				FE8D81FA4D762C6034CC8220 /* InstagramLoginView.swift */,
 				44575A9C84E65FC571C98465 /* SettingsView.swift */,
-				7F083911D2B14063BA7543B9 /* InstagramLoginView.swift */,
 				B75D9CC826B6F5BB3A97AC23 /* VibeMarkdownView.swift */,
 				9DB144B0215DF9BC0D37E2A5 /* VibeProfileView.swift */,
+				CA4FF514B3EF668DE1F5AFB6 /* VibeRevealView.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		A1A6DF475E6F9813CF8845C2 /* FitCheck */ = {
+			isa = PBXGroup;
+			children = (
+				81ABAE37369A2845EA46ECC4 /* FitCheckLiveView.swift */,
+			);
+			path = FitCheck;
 			sourceTree = "<group>";
 		};
 		A97E91408321307AA6F6ED52 /* Views */ = {
@@ -140,6 +173,7 @@
 			children = (
 				E30212FA94ECA00372C9A740 /* Camera */,
 				BCF4E51B902CABBB2E84835C /* Conversation */,
+				A1A6DF475E6F9813CF8845C2 /* FitCheck */,
 				D1420080DDA118E0BF550F22 /* Recommendations */,
 				650C191374D3D09DC3267EC5 /* Settings */,
 			);
@@ -222,7 +256,6 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					18693FB7E0FC5D525F1B71DF = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -262,20 +295,25 @@
 				FC666D36475E6F8718F60266 /* CameraView.swift in Sources */,
 				E870BE45D00A655FACA90EDD /* Components.swift in Sources */,
 				99C875FF9A88EEE91EFCC77C /* ContentView.swift in Sources */,
+				5D17804F8F68F2330143987D /* ConversationHistoryStore.swift in Sources */,
 				6F597CA0819D237543B9D93D /* ConversationView.swift in Sources */,
 				EA658405209D5A06527AD5B1 /* ConversationViewModel.swift in Sources */,
 				2936D7A43672E67C1AE5887C /* CuratedApp.swift in Sources */,
 				D2A1B4826FD7E3133B5F345B /* DesignSystem.swift in Sources */,
 				FD39B0B649CF767B4355F049 /* EmotionEvent.swift in Sources */,
+				8D16208C1DFCFC53BB41EEC1 /* FitCheckLiveView.swift in Sources */,
 				3EE9FECEEE77CFDC007E985C /* FitCheckResult.swift in Sources */,
+				DE5FA2E2ABF7060A8005DCDB /* GeminiLiveService.swift in Sources */,
+				ABA2BCB4885A7804FFCE3C3D /* GeminiVisionService.swift in Sources */,
+				C9B1E2AF4189B4DC1EF05AAE /* InstagramLoginView.swift in Sources */,
 				1FA08AA83E24F36681EFB036 /* RecommendationsView.swift in Sources */,
 				29EA8718F52F2C62F6D43E93 /* Secrets.swift in Sources */,
 				9A819A01A29B61280C6D355B /* SettingsView.swift in Sources */,
-				87EA4B64A9E644419E423967 /* InstagramLoginView.swift in Sources */,
 				69E42205ECACDC9905C05698 /* ValenceService.swift in Sources */,
 				6D25CF8B281BBA9C9E5B7825 /* VibeMarkdownView.swift in Sources */,
 				CF6C373A5BA572108B09E349 /* VibeProfile.swift in Sources */,
 				52EF4EE75F3FEE3E66AA2BA8 /* VibeProfileView.swift in Sources */,
+				717E8213AA5DD2B5FB7E2AA9 /* VibeRevealView.swift in Sources */,
 				0F6BBDC078893F15FA8F4C60 /* VibeStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -348,12 +386,13 @@
 		};
 		6BBDFF4FBC4A9A7C63F9FCD6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2CF9C5E4FA7C4647F0825BB3 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = F7JNNHL6CL;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -361,7 +400,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.curated.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.curated007.app;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -426,12 +465,13 @@
 		};
 		F01E0C01FAB927FB257381FE /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2CF9C5E4FA7C4647F0825BB3 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = F7JNNHL6CL;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -439,7 +479,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.curated.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.curated007.app;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = 1;

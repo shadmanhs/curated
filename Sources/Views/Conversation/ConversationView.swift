@@ -1,9 +1,13 @@
 import SwiftUI
+import PhotosUI
 
 struct ConversationView: View {
     @EnvironmentObject var vibeStore: VibeStore
     @StateObject private var viewModel = ConversationViewModel()
     @State private var textInput = ""
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var attachedImage: UIImage?
+    @State private var isAnalyzingPhoto = false
 
     var body: some View {
         NavigationStack {
@@ -55,25 +59,74 @@ struct ConversationView: View {
                         }
                     )
 
-                    // Text input fallback
+                    // Attached image preview
+                    if let attachedImage {
+                        HStack {
+                            Spacer()
+                            ZStack(alignment: .topTrailing) {
+                                Image(uiImage: attachedImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 120, height: 120)
+                                    .clipShape(RoundedRectangle(cornerRadius: DesignSystem.Radius.md))
+
+                                Button {
+                                    self.attachedImage = nil
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.white)
+                                        .background(Circle().fill(.black.opacity(0.5)))
+                                }
+                                .offset(x: 6, y: -6)
+                            }
+                        }
+                        .padding(.horizontal, DesignSystem.Spacing.md)
+                    }
+
+                    // Text input + photo picker
                     HStack(spacing: DesignSystem.Spacing.sm) {
+                        PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                            Image(systemName: "photo.on.rectangle.angled")
+                                .font(.title3)
+                                .foregroundColor(DesignSystem.Colors.primary)
+                        }
+
                         TextField("Type a message...", text: $textInput)
                             .textFieldStyle(.roundedBorder)
                             .font(DesignSystem.Typography.bodyMd())
 
                         Button {
-                            let msg = textInput
-                            textInput = ""
-                            Task { await viewModel.sendTextMessage(msg) }
+                            if attachedImage != nil {
+                                Task { await sendPhotoForReview() }
+                            } else {
+                                let msg = textInput
+                                textInput = ""
+                                Task { await viewModel.sendTextMessage(msg) }
+                            }
                         } label: {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(DesignSystem.Colors.primary)
+                            if isAnalyzingPhoto {
+                                ProgressView()
+                                    .frame(width: 28, height: 28)
+                            } else {
+                                Image(systemName: "arrow.up.circle.fill")
+                                    .font(.title2)
+                                    .foregroundColor(DesignSystem.Colors.primary)
+                            }
                         }
-                        .disabled(textInput.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .disabled(textInput.trimmingCharacters(in: .whitespaces).isEmpty && attachedImage == nil)
                     }
                     .padding(.horizontal, DesignSystem.Spacing.md)
                     .padding(.bottom, DesignSystem.Spacing.sm)
+                    .onChange(of: selectedPhoto) { _, newValue in
+                        Task {
+                            guard let newValue else { return }
+                            if let data = try? await newValue.loadTransferable(type: Data.self),
+                               let image = UIImage(data: data) {
+                                attachedImage = image
+                            }
+                            selectedPhoto = nil
+                        }
+                    }
                 }
             }
             .navigationTitle("Curated")
@@ -89,6 +142,34 @@ struct ConversationView: View {
                 viewModel.vibeStore = vibeStore
             }
         }
+    }
+
+    private func sendPhotoForReview() async {
+        guard let image = attachedImage else { return }
+        isAnalyzingPhoto = true
+
+        let userPrompt = textInput.isEmpty ? "Should I post this? Give me honest feedback." : textInput
+        textInput = ""
+        attachedImage = nil
+
+        // Add user message to chat
+        viewModel.messages.append(ConversationMessage(role: .user, content: "📷 \(userPrompt)"))
+
+        // Send to Gemini for vision analysis
+        do {
+            let result = try await GeminiVisionService.analyze(image: image, prompt: userPrompt, vibeContext: vibeStore.rawMarkdown)
+
+            // If ElevenLabs is connected, send the analysis as a message so the agent speaks it
+            if viewModel.isConnected {
+                await viewModel.sendTextMessage("I just shared a photo. Here's what I see: \(result). Please respond to this naturally.")
+            } else {
+                viewModel.messages.append(ConversationMessage(role: .agent, content: result))
+            }
+        } catch {
+            viewModel.messages.append(ConversationMessage(role: .agent, content: "Couldn't analyze the photo: \(error.localizedDescription)"))
+        }
+
+        isAnalyzingPhoto = false
     }
 }
 
