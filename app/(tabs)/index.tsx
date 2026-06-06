@@ -10,10 +10,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useConversation } from '@elevenlabs/react-native';
 import { Colors } from '../../constants/colors';
+import { useVibe } from '../../context/VibeContext';
+
+const BACKEND = process.env.EXPO_PUBLIC_BACKEND_BASE_URL ?? '';
 
 const AGENT_ID = process.env.EXPO_PUBLIC_ELEVENLABS_AGENT_ID ?? '';
 
@@ -27,6 +32,16 @@ let _id = 0;
 const nextId = () => String(++_id);
 
 export default function TalkScreen() {
+  const { systemPrompt, loadVibeFromMarkdown } = useVibe();
+
+  // Instagram auth modal state
+  const [showAuth, setShowAuth] = useState(false);
+  const [igUsername, setIgUsername] = useState('');
+  const [igPassword, setIgPassword] = useState('');
+  const [twoFactor, setTwoFactor] = useState('');
+  const [authStep, setAuthStep] = useState<'credentials' | 'loading' | 'error'>('credentials');
+  const [authError, setAuthError] = useState('');
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [textInput, setTextInput] = useState('');
 
@@ -80,13 +95,62 @@ export default function TalkScreen() {
     }
   }, [messages]);
 
+  const launchSession = useCallback(async (prompt: string) => {
+    await startSession({
+      agentId: AGENT_ID,
+      ...(prompt && {
+        overrides: { agent: { prompt: { prompt } } },
+      }),
+    });
+  }, [startSession]);
+
   const handleToggle = useCallback(async () => {
     if (isConnected || isConnecting) {
       await endSession();
-    } else {
-      await startSession({ agentId: AGENT_ID });
+      return;
     }
-  }, [isConnected, isConnecting, startSession, endSession]);
+    // No real vibe yet — require Instagram auth first
+    if (!systemPrompt) {
+      setAuthStep('credentials');
+      setAuthError('');
+      setShowAuth(true);
+      return;
+    }
+    await launchSession(systemPrompt);
+  }, [isConnected, isConnecting, endSession, launchSession, systemPrompt]);
+
+  const handleAuthSubmit = useCallback(async () => {
+    if (!igUsername.trim() || !igPassword.trim()) return;
+    setAuthStep('loading');
+    setAuthError('');
+    try {
+      const res = await fetch(`${BACKEND}/vibe/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: igUsername.trim(),
+          password: igPassword,
+          two_factor_code: twoFactor.trim() || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.detail ?? `Error ${res.status}`);
+      }
+      const { vibe_md } = await res.json();
+      loadVibeFromMarkdown(vibe_md);
+      setShowAuth(false);
+      await launchSession(
+        "You are a talking mirror — a calm, direct, tasteful voice that reflects the user's aesthetic back to them.\n" +
+        "You know their style, interests, and sensibility intimately because their taste profile is below.\n" +
+        "Speak like a confident, warm friend with excellent taste. Never be sycophantic. Be brief and specific.\n\n" +
+        vibe_md
+      );
+    } catch (e: unknown) {
+      setAuthError(e instanceof Error ? e.message : 'Something went wrong');
+      setAuthStep('error');
+    }
+  }, [igUsername, igPassword, twoFactor, loadVibeFromMarkdown, launchSession]);
 
   const handleSendText = useCallback(() => {
     const trimmed = textInput.trim();
@@ -183,6 +247,69 @@ export default function TalkScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+      {/* Instagram auth modal */}
+      <Modal visible={showAuth} transparent animationType="fade" onRequestClose={() => setShowAuth(false)}>
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Connect Instagram</Text>
+            <Text style={styles.modalSubtitle}>
+              Your recent posts will be read to build your taste profile.
+            </Text>
+
+            {authStep === 'loading' ? (
+              <View style={styles.loadingBlock}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+                <Text style={styles.loadingText}>Reading your posts...</Text>
+              </View>
+            ) : (
+              <>
+                <TextInput
+                  style={styles.modalInput}
+                  placeholder="Instagram username"
+                  placeholderTextColor={Colors.muted}
+                  value={igUsername}
+                  onChangeText={setIgUsername}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                <TextInput
+                  style={styles.modalInput}
+                  placeholder="Password"
+                  placeholderTextColor={Colors.muted}
+                  value={igPassword}
+                  onChangeText={setIgPassword}
+                  secureTextEntry
+                />
+                <TextInput
+                  style={styles.modalInput}
+                  placeholder="2FA code (if enabled)"
+                  placeholderTextColor={Colors.muted}
+                  value={twoFactor}
+                  onChangeText={setTwoFactor}
+                  keyboardType="number-pad"
+                />
+                {authStep === 'error' && (
+                  <Text style={styles.errorText}>{authError}</Text>
+                )}
+                <TouchableOpacity
+                  style={[styles.modalButton, (!igUsername.trim() || !igPassword.trim()) && styles.modalButtonDisabled]}
+                  onPress={handleAuthSubmit}
+                  disabled={!igUsername.trim() || !igPassword.trim()}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.modalButtonText}>Build my vibe</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowAuth(false)} style={styles.cancelButton}>
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -237,4 +364,54 @@ const styles = StyleSheet.create({
   },
   sendIcon: { fontSize: 18, color: '#fff', fontWeight: '700' },
   sendIconDisabled: { opacity: 0.4 },
+
+  // Instagram auth modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  modalCard: {
+    backgroundColor: Colors.canvas,
+    borderRadius: 20,
+    padding: 24,
+    gap: 12,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.ink,
+    marginBottom: 2,
+  },
+  modalSubtitle: {
+    fontSize: 13,
+    color: Colors.stone,
+    lineHeight: 18,
+    marginBottom: 4,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: Colors.hairline,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    fontSize: 15,
+    color: Colors.ink,
+    backgroundColor: Colors.surface,
+  },
+  modalButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingVertical: 13,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  modalButtonDisabled: { opacity: 0.4 },
+  modalButtonText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  cancelButton: { alignItems: 'center', paddingVertical: 6 },
+  cancelText: { fontSize: 14, color: Colors.stone },
+  loadingBlock: { alignItems: 'center', paddingVertical: 20, gap: 12 },
+  loadingText: { fontSize: 14, color: Colors.stone },
+  errorText: { fontSize: 13, color: '#c0392b' },
 });
