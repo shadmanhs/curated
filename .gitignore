@@ -31,3 +31,4 @@ session.json
 
 # Claude
 .claude/
+backend/.env
